@@ -42,6 +42,8 @@ class Statistics:
             sort_key = sort_by_goals
         elif sorting == SortBy.ASSISTS:
             sort_key = sort_by_assists
+        else:
+            sort_key = sort_by_points
 
         sorted_players = sorted(
             self._players,
