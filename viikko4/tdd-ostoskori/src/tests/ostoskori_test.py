@@ -25,7 +25,7 @@ class TestOstoskori(unittest.TestCase):
         self.kori.lisaa_tuote(self.juusto)
         self.assertEqual(self.kori.tavaroita_korissa(), 2)
 
-    def test_kahden_tuotteen_lisaamisen_jalkeen_hinta_oikein(self):
+    def test_kahden_eri_tuotteen_lisaamisen_jalkeen_hinta_oikein(self):
         self.kori.lisaa_tuote(self.maito)
         self.kori.lisaa_tuote(self.juusto)
         self.assertEqual(self.kori.hinta(), self.maito.hinta() + self.juusto.hinta())
@@ -34,3 +34,8 @@ class TestOstoskori(unittest.TestCase):
         self.kori.lisaa_tuote(self.maito)
         self.kori.lisaa_tuote(self.maito)
         self.assertEqual(self.kori.tavaroita_korissa(), 2)
+
+    def test_kahden_saman_tuotteen_lisaamisen_jalkeen_hinta_oikein(self):
+        self.kori.lisaa_tuote(self.maito)
+        self.kori.lisaa_tuote(self.maito)
+        self.assertEqual(self.kori.hinta(), self.maito.hinta() * 2)
