@@ -7,144 +7,103 @@ class IntJoukko:
         if kapasiteetti is None:
             self.kapasiteetti = KAPASITEETTI
         elif not isinstance(kapasiteetti, int) or kapasiteetti < 0:
-            raise Exception("Väärä kapasiteetti")  # heitin vaan jotain :D
+            raise Exception("Väärä kapasiteetti")
         else:
             self.kapasiteetti = kapasiteetti
 
         if kasvatuskoko is None:
             self.kasvatuskoko = OLETUSKASVATUS
-        elif not isinstance(kapasiteetti, int) or kapasiteetti < 0:
-            raise Exception("kapasiteetti2")  # heitin vaan jotain :D
+        elif not isinstance(kasvatuskoko, int) or kasvatuskoko < 0:
+            raise Exception("Väärä kasvatuskoko")
         else:
             self.kasvatuskoko = kasvatuskoko
 
-        self.ljono = [0] * self.kapasiteetti
-
+        self.alkio_taulu = [0] * self.kapasiteetti
         self.alkioiden_lkm = 0
 
     def kuuluu(self, n):
-        on = 0
-
         for i in range(0, self.alkioiden_lkm):
-            if n == self.ljono[i]:
-                on = on + 1
-
-        if on > 0:
-            return True
-        else:
-            return False
+            if n == self.alkio_taulu[i]:
+                return True
+        return False
 
     def lisaa(self, n):
-        ei_ole = 0
-
-        if self.alkioiden_lkm == 0:
-            self.ljono[0] = n
-            self.alkioiden_lkm = self.alkioiden_lkm + 1
-            return True
-        else:
-            pass
-
         if not self.kuuluu(n):
-            self.ljono[self.alkioiden_lkm] = n
+            self.alkio_taulu[self.alkioiden_lkm] = n
             self.alkioiden_lkm = self.alkioiden_lkm + 1
-
-            if self.alkioiden_lkm % len(self.ljono) == 0:
-                taulukko_old = self.ljono
-                self.kopioi_taulukko(self.ljono, taulukko_old)
-                self.ljono = [0] * (self.alkioiden_lkm + self.kasvatuskoko)
-                self.kopioi_taulukko(taulukko_old, self.ljono)
-
+            self._kasvata_tarvittaessa()
             return True
-
         return False
+
+    def lisaa_taulu(self, taulu):
+        for alkio in taulu:
+            self.lisaa(alkio)
 
     def poista(self, n):
-        kohta = -1
-        apu = 0
-
+        poistettava_indeksi = -1
         for i in range(0, self.alkioiden_lkm):
-            if n == self.ljono[i]:
-                kohta = i  # siis luku löytyy tuosta kohdasta :D
-                self.ljono[kohta] = 0
+            if n == self.alkio_taulu[i]:
+                poistettava_indeksi = i
                 break
 
-        if kohta != -1:
-            for j in range(kohta, self.alkioiden_lkm - 1):
-                apu = self.ljono[j]
-                self.ljono[j] = self.ljono[j + 1]
-                self.ljono[j + 1] = apu
-
+        if poistettava_indeksi != -1:
             self.alkioiden_lkm = self.alkioiden_lkm - 1
+
+            for i in range(poistettava_indeksi, self.alkioiden_lkm):
+                self.alkio_taulu[i] = self.alkio_taulu[i + 1]
+
             return True
 
         return False
 
-    def kopioi_taulukko(self, a, b):
-        for i in range(0, len(a)):
-            b[i] = a[i]
+    def poista_taulu(self, taulu):
+        for alkio in taulu:
+            self.poista(alkio)
 
     def mahtavuus(self):
         return self.alkioiden_lkm
 
-    def to_int_list(self):
-        taulu = [0] * self.alkioiden_lkm
-
-        for i in range(0, len(taulu)):
-            taulu[i] = self.ljono[i]
-
-        return taulu
+    def joukko_tauluksi(self):
+        return [self.alkio_taulu[i] for i in range(0, self.alkioiden_lkm)]
 
     @staticmethod
     def yhdiste(a, b):
-        x = IntJoukko()
-        a_taulu = a.to_int_list()
-        b_taulu = b.to_int_list()
+        yhdiste_joukko = IntJoukko()
+        a_taulu = a.joukko_tauluksi()
+        b_taulu = b.joukko_tauluksi()
 
-        for i in range(0, len(a_taulu)):
-            x.lisaa(a_taulu[i])
+        yhdiste_joukko.lisaa_taulu(a_taulu)
+        yhdiste_joukko.lisaa_taulu(b_taulu)
 
-        for i in range(0, len(b_taulu)):
-            x.lisaa(b_taulu[i])
-
-        return x
+        return yhdiste_joukko
 
     @staticmethod
     def leikkaus(a, b):
-        y = IntJoukko()
-        a_taulu = a.to_int_list()
-        b_taulu = b.to_int_list()
+        leikkaus_joukko = IntJoukko()
+        a_taulu = a.joukko_tauluksi()
+        b_taulu = b.joukko_tauluksi()
 
-        for i in range(0, len(a_taulu)):
-            for j in range(0, len(b_taulu)):
-                if a_taulu[i] == b_taulu[j]:
-                    y.lisaa(b_taulu[j])
+        leikkaus_taulu = [alkio for alkio in a_taulu if alkio in b_taulu]
+        leikkaus_joukko.lisaa_taulu(leikkaus_taulu)
 
-        return y
+        return leikkaus_joukko
 
     @staticmethod
     def erotus(a, b):
-        z = IntJoukko()
-        a_taulu = a.to_int_list()
-        b_taulu = b.to_int_list()
+        erotus_joukko = IntJoukko()
+        a_taulu = a.joukko_tauluksi()
+        b_taulu = b.joukko_tauluksi()
 
-        for i in range(0, len(a_taulu)):
-            z.lisaa(a_taulu[i])
+        erotus_joukko.lisaa_taulu(a_taulu)
+        erotus_joukko.poista_taulu(b_taulu)
 
-        for i in range(0, len(b_taulu)):
-            z.poista(b_taulu[i])
+        return erotus_joukko
 
-        return z
+    def _kasvata_tarvittaessa(self):
+        if self.alkioiden_lkm == len(self.alkio_taulu):
+            self.alkio_taulu = self.alkio_taulu  + ([0] * self.kasvatuskoko)
 
     def __str__(self):
-        if self.alkioiden_lkm == 0:
-            return "{}"
-        elif self.alkioiden_lkm == 1:
-            return "{" + str(self.ljono[0]) + "}"
-        else:
-            tuotos = "{"
-            for i in range(0, self.alkioiden_lkm - 1):
-                tuotos = tuotos + str(self.ljono[i])
-                tuotos = tuotos + ", "
-            tuotos = tuotos + str(self.ljono[self.alkioiden_lkm - 1])
-            tuotos = tuotos + "}"
-            return tuotos
+        str_taulu = [str(alkio) for alkio in self.joukko_tauluksi()]
+        tuotos = "{" + ", ".join(str_taulu) + "}"
+        return tuotos
