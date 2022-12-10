@@ -7,6 +7,12 @@ class QueryBuilder:
     def build(self):
         return self._matcher
 
+    def oneOf(self, *matchers):
+        return QueryBuilder(And(self._matcher, Or(*matchers)))
+
+    def invert(self):
+        return QueryBuilder(Not(self._matcher))
+
     def playsIn(self, team):
         return QueryBuilder(And(self._matcher, PlaysIn(team)))
 
