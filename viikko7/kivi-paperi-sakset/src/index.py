@@ -1,6 +1,4 @@
-from kps_pelaaja_vs_pelaaja import KPSPelaajaVsPelaaja
-from kps_tekoaly import KPSTekoaly
-from kps_parempi_tekoaly import KPSParempiTekoaly
+from peli_tehdas import luo_peli
 
 
 def main():
@@ -13,15 +11,9 @@ def main():
               )
 
         vastaus = input()
-        peli = None
+        peli = luo_peli(vastaus)
 
-        if vastaus.endswith("a"):
-            peli = KPSPelaajaVsPelaaja()
-        elif vastaus.endswith("b"):
-            peli = KPSTekoaly()
-        elif vastaus.endswith("c"):
-            peli = KPSParempiTekoaly()
-        else:
+        if not peli:
             break
 
         print(
